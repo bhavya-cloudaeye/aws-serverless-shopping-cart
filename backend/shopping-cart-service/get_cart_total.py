@@ -20,11 +20,13 @@ def lambda_handler(event, context):
     List items in shopping cart.
     """
     product_id = event["pathParameters"]["product_id"]
+    logger.info(f"Check the count of item#{product_id} in the shopping cart")
     response = table.get_item(
         Key={"pk": f"product#{product_id}", "sk": "totalquantity"}
     )
+    logger.info(f"Fetching the count of item#{product_id}")
     quantity = response["Item"]["quantity"]
-
+    logger.info(f"Total {quantity} number of item#{product_id} active in the shopping cart")
     return {
         "statusCode": 200,
         "body": json.dumps(

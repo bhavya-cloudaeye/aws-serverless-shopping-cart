@@ -34,9 +34,12 @@ def lambda_handler(event, context):
 
     for record in records:
         keys = dynamodb_to_python(record["dynamodb"]["Keys"])
+        event_name = record.get("eventName", "") 
+        logger.info(f"Current dynamo event - {event_name}")
         # NewImage record only exists if the event is INSERT or MODIFY
         if record["eventName"] in ("INSERT", "MODIFY"):
             new_image = dynamodb_to_python(record["dynamodb"]["NewImage"])
+            logger.info(f"New image for dynamo db since this is a modification event - {event_name}")
         else:
             new_image = {}
 
@@ -51,14 +54,16 @@ def lambda_handler(event, context):
 
         # We want to record the quantity change the change made to the db rather than absolute values
         if keys["sk"].startswith("product#"):
+            qty_change = new_image.get("quantity", 0) - old_image.get("quantity", 0)
+            logger.info(f"Recording the change in quantity made to dynamo db - {qty_change}")
             quantity_change_counter.update(
                 {
-                    keys["sk"]: new_image.get("quantity", 0)
-                    - old_image.get("quantity", 0)
+                    keys["sk"]: qty_change
                 }
             )
 
     for k, v in quantity_change_counter.items():
+        logger.info(f"Recording change in quantity count - {k} : {v}")
         table.update_item(
             Key={"pk": k, "sk": "totalquantity"},
             ExpressionAttributeNames={"#quantity": "quantity"},

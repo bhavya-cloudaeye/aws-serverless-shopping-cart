@@ -24,11 +24,11 @@ def lambda_handler(event, context):
     """
     path_params = event["pathParameters"]
     product_id = path_params.get("product_id")
-    logger.debug("Retriving product_id: %s", product_id)
+    logger.debug(f"Retriving product with id: {product_id}")
     product = next(
         (item for item in product_list if item["productId"] == product_id), None
     )
-
+    logger.debug(f"Successfully fetched product detail with id - {product_id}: {product}")
     return {
         "statusCode": 200,
         "headers": HEADERS,

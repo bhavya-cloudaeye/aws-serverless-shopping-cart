@@ -29,16 +29,18 @@ def lambda_handler(event, context):
         user_sub = get_user_sub(jwt_token)
         key_string = f"user#{user_sub}"
         logger.structure_logs(append=True, cart_id=f"user#{user_sub}")
+        logger.info(f"Authenticated user in session: {key_string}")
     else:
         key_string = f"cart#{cart_id}"
         logger.structure_logs(append=True, cart_id=f"cart#{cart_id}")
+        logger.info(f"Anonymous user in session: {key_string}")
 
     # No need to query database if the cart_id was generated rather than passed into the function
     if generated:
         logger.info("cart ID was generated in this request, not fetching cart from DB")
         product_list = []
     else:
-        logger.info("Fetching cart from DB")
+        logger.info(f"List all items in cart for user : {key_string}")
         response = table.query(
             KeyConditionExpression=Key("pk").eq(key_string)
             & Key("sk").begins_with("product#"),
@@ -48,7 +50,10 @@ def lambda_handler(event, context):
         )
         product_list = response.get("Items", [])
 
+    logger.info(f"Total {len(product_list)} items in the cart for user - {key_string}")
+     
     for product in product_list:
+        logger.info(f"Product in user#{key_string} cart - {product}")
         product.update(
             (k, v.replace("product#", "")) for k, v in product.items() if k == "sk"
         )

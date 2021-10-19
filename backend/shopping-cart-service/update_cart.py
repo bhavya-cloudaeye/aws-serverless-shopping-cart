@@ -42,6 +42,7 @@ def lambda_handler(event, context):
 
     # retrieve the product_id that was specified in the url
     product_id = event["pathParameters"]["product_id"]
+    logger.info(f"Update quantity of items in cart for product#{product_id}")
 
     quantity = int(request_payload["quantity"])
     cart_id, _ = get_cart_id(event["headers"])
@@ -51,9 +52,11 @@ def lambda_handler(event, context):
     jwt_token = event["headers"].get("Authorization")
     if jwt_token:
         user_sub = get_user_sub(jwt_token)
+        logger.info(f"Authenticated user in session - user#{user_sub}")
 
     try:
         product = get_product_from_external_service(product_id)
+        logger.info(f"Product details with id - {product_id} : ", product)
     except NotFoundException:
         logger.info("No product found with product_id: %s", product_id)
         return {
@@ -64,6 +67,7 @@ def lambda_handler(event, context):
 
     # Prevent storing negative quantities of things
     if quantity < 0:
+        logger.error(f"Cannot save negative quantity")
         return {
             "statusCode": 400,
             "headers": get_headers(cart_id),
@@ -85,6 +89,8 @@ def lambda_handler(event, context):
     else:
         pk = f"cart#{cart_id}"
         ttl = generate_ttl()
+
+    logger.error(f"Update quantity to - {quantity} for the product - {product_id} in cart - {pk}")
 
     table.put_item(
         Item={

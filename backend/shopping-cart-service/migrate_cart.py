@@ -24,6 +24,10 @@ def update_item(user_id, item):
     Update an item in the database, adding the quantity of the passed in item to the quantity of any products already
     existing in the cart.
     """
+    logger.info(f"Updating item quantity in the cart for user#{user_id}")
+    logger.info(f"Quantity updated to : ", item.get("quantity", 0))
+    ttl = generate_ttl(days=30)
+    logger.info(f"Item's time to live in cart : ", ttl)
     table.update_item(
         Key={"pk": f"user#{user_id}", "sk": item["sk"]},
         ExpressionAttributeNames={
@@ -33,11 +37,12 @@ def update_item(user_id, item):
         },
         ExpressionAttributeValues={
             ":val": item["quantity"],
-            ":ttl": generate_ttl(days=30),
+            ":ttl": ttl,
             ":productDetail": item["productDetail"],
         },
         UpdateExpression="ADD #quantity :val SET #expirationTime = :ttl, #productDetail = :productDetail",
     )
+    logger.info(f"Successfully updated quantity for item#{item['sk']}")
 
 
 @metrics.log_metrics(capture_cold_start_metric=True)
@@ -53,7 +58,7 @@ def lambda_handler(event, context):
     try:
         # Because this method is authorized at API gateway layer, we don't need to validate the JWT claims here
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-        logger.info("Migrating cart_id %s to user_id %s", cart_id, user_id)
+        logger.info("LoggedIn session detected. Migrating cart_id %s to user_id %s", cart_id, user_id)
     except KeyError:
 
         return {
@@ -63,6 +68,7 @@ def lambda_handler(event, context):
         }
 
     # Get all cart items belonging to the user's anonymous identity
+    logger.info(f"Get all cart items belonging to the user's anonymous identity - cart#{cart_id}")
     response = table.query(
         KeyConditionExpression=Key("pk").eq(f"cart#{cart_id}")
         & Key("sk").begins_with("product#")
@@ -76,6 +82,7 @@ def lambda_handler(event, context):
     for item in unauth_cart:
         # Store items with user identifier as pk instead of "unauthenticated" cart ID
         # Using threading library to perform updates in parallel
+        logger.info(f"Store items with user#{user_id} - {item}")
         ddb_updateitem_thread = threading.Thread(
             target=update_item, args=(user_id, item)
         )
@@ -84,6 +91,7 @@ def lambda_handler(event, context):
 
         # Delete items with unauthenticated cart ID
         # Rather than deleting directly, push to SQS queue to handle asynchronously
+        logger.info(f"Pushing item message to SQS")
         queue.send_message(MessageBody=json.dumps(item, default=handle_decimal_type))
 
     for ddb_thread in thread_list:
@@ -100,10 +108,14 @@ def lambda_handler(event, context):
     )
 
     product_list = response.get("Items", [])
+    logger.info(f"Migrate ${len(product_list)} from anonymous session - cart#{cart_id} to authenticated session - user#{user_id}")
+
     for product in product_list:
         product.update(
             (k, v.replace("product#", "")) for k, v in product.items() if k == "sk"
         )
+
+    logger.info(f"Items is cart successfully migrated from anonymous session - cart#{cart_id} to authenticated session - user#{user_id}")
 
     return {
         "statusCode": 200,
