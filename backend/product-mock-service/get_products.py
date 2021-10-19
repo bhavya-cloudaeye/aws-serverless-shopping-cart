@@ -1,6 +1,6 @@
 import json
 import os
-
+from itertools import groupby
 from aws_lambda_powertools import Logger, Tracer
 
 logger = Logger()

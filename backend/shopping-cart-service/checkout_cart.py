@@ -52,7 +52,7 @@ def lambda_handler(event, context):
     # batch_writer will be used to update status for cart entries belonging to the user
     with table.batch_writer() as batch:
         for item in cart_items:
-            logger.info("Checkout the item in cart : ", item[pk])
+            logger.info("Checkout the item in cart : ", item["pk"])
             # Delete ordered items
             batch.delete_item(Key={"pk": item["pk"], "sk": item["sk"]})
             logger.info("Remove the checked out item from cart : ", item["pk"])
