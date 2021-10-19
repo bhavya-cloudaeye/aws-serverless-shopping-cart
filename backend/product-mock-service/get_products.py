@@ -33,6 +33,7 @@ def lambda_handler(event, context):
     
     logger.info(f"Listing items per category : ")
     for key, value in groupby(product_list_sorted, key_func):
+        value = list(value)
         logger.info(f"Category : {key} , Items available : {len(value)}")
 
     return {
