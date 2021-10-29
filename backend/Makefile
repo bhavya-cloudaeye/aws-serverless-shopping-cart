@@ -1,6 +1,6 @@
 all: build deploy
 ORIGIN ?= http://localhost:8080
-STACKNAME ?= aws-serverless-shopping-cart
+STACKNAME ?= sless
 
 build:
 	@echo "Building template $(TEMPLATE).yaml..."

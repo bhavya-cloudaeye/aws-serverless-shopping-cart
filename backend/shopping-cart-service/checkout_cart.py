@@ -30,7 +30,7 @@ def lambda_handler(event, context):
     try:
         # Because this method is authorized at API gateway layer, we don't need to validate the JWT claims here
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-        logger.info("Checkout items in cart for user : ", user_id)
+        logger.info(f"Checkout items in cart for user : {user_id}")
     except KeyError:
 
         return {
@@ -53,10 +53,10 @@ def lambda_handler(event, context):
     with table.batch_writer() as batch:
         for item in cart_items:
             pk = str(item.get("pk", ""))
-            logger.info("Checkout the item in cart : ", pk)
+            logger.info(f"Checkout the item in cart : {pk}")
             # Delete ordered items
             batch.delete_item(Key={"pk": pk, "sk": item["sk"]})
-            logger.info("Remove the checked out item from cart : ", pk)
+            logger.info(f"Remove the checked out item from cart : {pk}")
 
     metrics.add_metric(name="CartCheckedOut", unit="Count", value=1)
     logger.info({"action": "CartCheckedOut", "cartItems": cart_items})
