@@ -181,6 +181,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: ListCart
       CodeUri: shopping-cart-service/
       Handler: list_cart.lambda_handler
       Role: !GetAtt ListCartRole.Arn
@@ -202,6 +203,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: AddToCart
       CodeUri: shopping-cart-service/
       Handler: add_to_cart.lambda_handler
       Role: !GetAtt AddToCartRole.Arn
@@ -224,6 +226,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: UpdateCart
       CodeUri: shopping-cart-service/
       Handler: update_cart.lambda_handler
       Role: !GetAtt AddToCartRole.Arn
@@ -246,6 +249,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: MigrateCart
       CodeUri: shopping-cart-service/
       Handler: migrate_cart.lambda_handler
       Timeout: 30
@@ -272,6 +276,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: CheckoutCart
       CodeUri: shopping-cart-service/
       Handler: checkout_cart.lambda_handler
       Timeout: 10
@@ -297,6 +302,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: GetCartTotal
       CodeUri: shopping-cart-service/
       Handler: get_cart_total.lambda_handler
       Timeout: 10
@@ -316,6 +322,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: DeleteFromCart
       CodeUri: shopping-cart-service/
       Handler: delete_from_cart.lambda_handler
       ReservedConcurrentExecutions: 25  # Keep the ddb spikes down in case of many deletes at once
@@ -347,6 +354,7 @@ Resources:
     DependsOn:
       - LambdaLoggingPolicy
     Properties:
+      FunctionName: CartDBStream
       CodeUri: shopping-cart-service/
       Handler: db_stream_handler.lambda_handler
       Layers:

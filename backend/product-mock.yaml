@@ -34,6 +34,7 @@ Resources:
   GetProductFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: GetProduct
       CodeUri: product-mock-service/
       Handler: get_product.lambda_handler
       Events:
@@ -46,6 +47,7 @@ Resources:
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: GetProducts
       CodeUri: product-mock-service/
       Handler: get_products.lambda_handler
       Events:

@@ -1,6 +1,6 @@
 all: build deploy
 ORIGIN ?= http://localhost:8080
-STACKNAME ?= sless
+STACKNAME ?= lambda-sample
 
 build:
 	@echo "Building template $(TEMPLATE).yaml..."
