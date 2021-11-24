@@ -8,14 +8,14 @@ from boto3.dynamodb.conditions import Key
 from shared import get_cart_id, get_headers, get_user_sub, handle_decimal_type
 
 logger = Logger()
-tracer = Tracer()
+# tracer = Tracer()
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
 
 
 @logger.inject_lambda_context(log_event=True)
-@tracer.capture_lambda_handler
+# @tracer.capture_lambda_handler
 def lambda_handler(event, context):
     """
     List items in shopping cart.

@@ -9,7 +9,7 @@ from boto3.dynamodb.conditions import Key
 from shared import generate_ttl, get_cart_id, get_headers, handle_decimal_type
 
 logger = Logger()
-tracer = Tracer()
+# tracer = Tracer()
 metrics = Metrics()
 
 dynamodb = boto3.resource("dynamodb")
@@ -18,7 +18,7 @@ sqs = boto3.resource("sqs")
 queue = sqs.Queue(os.environ["DELETE_FROM_CART_SQS_QUEUE"])
 
 
-@tracer.capture_method
+# @tracer.capture_method
 def update_item(user_id, item):
     """
     Update an item in the database, adding the quantity of the passed in item to the quantity of any products already
@@ -47,7 +47,7 @@ def update_item(user_id, item):
 
 @metrics.log_metrics(capture_cold_start_metric=True)
 @logger.inject_lambda_context(log_event=True)
-@tracer.capture_lambda_handler
+# @tracer.capture_lambda_handler
 def lambda_handler(event, context):
     """
     Update cart table to use user identifier instead of anonymous cookie value as a key. This will be called when a user
