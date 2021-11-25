@@ -23,6 +23,15 @@ Go to the [AWS Amplify console](https://console.aws.amazon.com/amplify/home), th
 This will deploy both the frontend and backend:
 ![Amplify Console](./images/AmplifyConsoleScreen.png)
 
+### Collecting the database endpoints
+- Goto `dynamodb` in the aws console
+- Goto `tables` in the left menu to find the table whose name starts with **lambda-sample-shoopingcart**
+- Create a **backup** of this (to help restore after fault injection)
+    - Goto `Backups` in the left menu
+    - Select create backup (on demand)
+    - Select the above table and give the backup a proper name
+
 ### Clean Up
-Delete the CloudFormation stacks created by this project. One is named "CartApp", and then there are 3 with names 
+- Delete the CloudFormation stacks created by this project. One is named "CartApp", and then there are 3 with names 
 starting with **aws-serverless-shopping-cart-**.
+- Delete the backup (if created) for the dynamodb
