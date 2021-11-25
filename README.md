@@ -9,7 +9,7 @@ Amplify will need this to access your repository. The token will need the “rep
 
 Set environment variables:
 ```bash
-export GITHUB_REPO=https://github.com/<your-github-username>/aws-serverless-shopping-cart
+export GITHUB_REPO=https://github.com/bhavya-cloudaeye/aws-serverless-shopping-cart
 export GITHUB_BRANCH=master  # Or whichever branch you wish to track
 export GITHUB_OAUTH_TOKEN=<github personal access token>
 ```
