@@ -4,7 +4,7 @@ import os
 from aws_lambda_powertools import Logger, Tracer
 
 logger = Logger()
-# tracer = Tracer()
+tracer = Tracer()
 
 with open("product_list.json", "r") as product_list:
     product_list = json.load(product_list)
@@ -17,7 +17,7 @@ HEADERS = {
 
 
 @logger.inject_lambda_context(log_event=True)
-# @tracer.capture_lambda_handler
+@tracer.capture_lambda_handler
 def lambda_handler(event, context):
     """
     Return single product based on path parameter.

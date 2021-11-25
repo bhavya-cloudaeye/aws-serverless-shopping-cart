@@ -6,7 +6,7 @@ from aws_lambda_powertools import Logger, Tracer
 from boto3.dynamodb import types
 
 logger = Logger()
-# tracer = Tracer()
+tracer = Tracer()
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
@@ -14,7 +14,7 @@ table = dynamodb.Table(os.environ["TABLE_NAME"])
 deserializer = types.TypeDeserializer()
 
 
-# @tracer.capture_method
+@tracer.capture_method
 def dynamodb_to_python(dynamodb_item):
     """
     Convert from dynamodb low level format to python dict
