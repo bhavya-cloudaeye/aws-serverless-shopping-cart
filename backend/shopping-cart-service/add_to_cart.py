@@ -14,7 +14,7 @@ from shared import (
 from utils import get_product_from_external_service
 
 logger = Logger()
-tracer = Tracer()
+# tracer = Tracer()
 metrics = Metrics()
 
 dynamodb = boto3.resource("dynamodb")
@@ -24,7 +24,7 @@ product_service_url = os.environ["PRODUCT_SERVICE_URL"]
 
 @metrics.log_metrics(capture_cold_start_metric=True)
 @logger.inject_lambda_context(log_event=True)
-@tracer.capture_lambda_handler
+# @tracer.capture_lambda_handler
 def lambda_handler(event, context):
     """
     Add a the provided quantity of a product to a cart. Where an item already exists in the cart, the quantities will
